@@ -58,11 +58,10 @@ for i = 1:length(op_times)
                 is_charging = true;
                 power_generation = nom_power_generation;
                 
-                %{
+                
                 %when sitting to charge, change to idle power consumption
                 power_consumption = 45;
                 distance_traveled = 0;
-                %}
             else
                 %make sure power_generation is consistent with user input
                 %if they disabled changing azimuth
@@ -71,15 +70,13 @@ for i = 1:length(op_times)
                 else 
                     power_generation = nom_power_generation;
                 end
-                %{
                 power_consumption = op_modes(i);
                 distance_traveled = velocity_in_meters;
                 movement_duration = movement_duration + 1;
-                %}
             end
 
             energy_change =  power_generation - power_consumption;
-            %total_distance_traveled = total_distance_traveled + distance_traveled;
+            total_distance_traveled = total_distance_traveled + distance_traveled;
 
             temp_cap = battery_cap(time_offset-1) + energy_change;
 
@@ -99,5 +96,5 @@ for i = 1:length(op_times)
     end
 end
 
-%speed_made_good_in_meters = 100*(total_distance_traveled / movement_duration)
+speed_made_good_in_meters = 100*(total_distance_traveled / movement_duration)
     

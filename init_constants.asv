@@ -1,13 +1,28 @@
-nom_power_generation = 68;
-init_soc = 0.8;
-tolerance  = 1e-2; %used to check if battery state of charge exceeds 100%, or reaches 0%
+nom_power_generation = user_power_generation;
 
-tv_length = 8618*60; %mins to secs
+init_soc = 0.8;
+
+%if soc falls below this percentage, then stop moving, orient yourself, and
+%starting charging
+start_charge_soc = 0.6;
+
+%if soc after starting to charge reaches this, then continue roving
+end_charge_soc = 0.9;
+
+tolerance  = 1e-2; 
+
+timeline_filename = 'Power consumption timeline.xlsx';
+op_mode_power_range = 'C2:C188';
+task_duration_range = 'D2:D188';
+sheet_name = 'Y23 Timeline - Rev 2';
+
+tv_length = xlsread(timeline_filename, sheet_name, 'F3');
+tv_length = tv_length*60; %mins to secs
 
 time_vector = 1:tv_length;
 
 azimuth_angle = zeros(1, tv_length); %in degrees
-azimuth_angle(1) = 15; %starting at 15 degrees azimuth
+azimuth_angle(1) = starting_azimuth; %starting at 15 degrees azimuth
 
 angle_offset = zeros(1, tv_length);
 
@@ -28,6 +43,10 @@ for i = 2:tv_length
     azimuth_angle(i) = prev_value + diff;
 end
 
+if (~enable_changing_azimuth)
+    azimuth_angle(1:tv_length) = 90;
+end
+
 %elevation_angle = normrnd(5,5,[1,tv_length]);
 elevation_angle = 5;
 
@@ -45,10 +64,7 @@ end
 soc_under_100 = true;
 battery_cap(1) = battery_total*init_soc;
 
-op_mode_'A1:A187'
+%multiply by 60 to get task durations in seconds
+op_times = 60*xlsread(timeline_filename, sheet_name, task_duration_range);
+op_modes = xlsread(timeline_filename, sheet_name, op_mode_power_range);
 
-op_times = readtable('Power consumption timeline.xlsx','Range','B1:B43');
-op_modes = readtable('Power consumption timeline.xlsx', 'Range' , 'E1:E43');
-op_times = table2array(op_times);
-op_times = op_times.*60; %from mins to secs
-op_modes = table2array(op_modes);
