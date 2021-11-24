@@ -1,0 +1,54 @@
+nom_power_generation = 68;
+init_soc = 0.8;
+tolerance  = 1e-2; %used to check if battery state of charge exceeds 100%, or reaches 0%
+
+tv_length = 8618*60; %mins to secs
+
+time_vector = 1:tv_length;
+
+azimuth_angle = zeros(1, tv_length); %in degrees
+azimuth_angle(1) = 15; %starting at 15 degrees azimuth
+
+angle_offset = zeros(1, tv_length);
+
+battery_cap = zeros(1,tv_length);
+
+distance_travelled = zeros(1,tv_length);
+
+
+battery_total = 200*3600; %maximum battery energy capacity in Joules
+velocity_cm  = 4;
+velocity_m = velocity_cm/100;
+normal_distance = velocity_m;
+
+
+for i = 2:tv_length
+    prev_value = azimuth_angle(i-1);
+    diff = 13 / (24*60^2); 
+    azimuth_angle(i) = prev_value + diff;
+end
+
+%elevation_angle = normrnd(5,5,[1,tv_length]);
+elevation_angle = 5;
+
+%middle coordinate is sqrt(panel height*(half the panel width))
+panel_normal_vector = [0, 203.125, 0];
+
+for i = 1: tv_length
+    azimuth_to_use = azimuth_angle(i);
+    %elevation_to_use = elevation_angle(i);
+    elevation_to_use = elevation_angle;
+    [s1, s2, s3] = sph2cart(deg2rad(azimuth_to_use),deg2rad(elevation_to_use),1353);
+    angle_offset(i) = dot(panel_normal_vector/norm(panel_normal_vector), [s1,s2,s3]/norm([s1,s2,s3]));
+end
+
+soc_under_100 = true;
+battery_cap(1) = battery_total*init_soc;
+
+op_mode_'A1:A187'
+
+op_times = readtable('Power consumption timeline.xlsx','Range','B1:B43');
+op_modes = readtable('Power consumption timeline.xlsx', 'Range' , 'E1:E43');
+op_times = table2array(op_times);
+op_times = op_times.*60; %from mins to secs
+op_modes = table2array(op_modes);
