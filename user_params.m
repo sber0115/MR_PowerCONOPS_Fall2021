@@ -3,9 +3,8 @@
 %relative to the rover. The sun will clock around at a rate of 13 degrees
 %per day.
 
-%when this is enabled, it more or less emulates extremely off-optimal
-%roving paths, because ideally we'll always be orienting the panel normal
-%to the sun
+%when this is enabled, it more or less simulates straight line driving with
+%where the solar vector relative to the panel isnt optimized
 enable_changing_azimuth = false;
 starting_azimuth = 15;
 

@@ -5,7 +5,7 @@ init_soc = 0.8;
 
 %if soc falls below this percentage, then stop moving, orient yourself, and
 %starting charging
-start_charge_soc = 0.7;
+start_charge_soc = 0.5;
 
 %if soc after starting to charge reaches this, then continue roving
 end_charge_soc = 0.9;
@@ -15,12 +15,12 @@ tolerance  = 1e-2;
 
 %setting up excel file readings
 timeline_filename = 'Power consumption timeline.xlsx';
-op_mode_power_range = 'C2:C188';
-task_duration_range = 'D2:D188';
+op_mode_power_range = 'D2:D188';
+task_duration_range = 'E2:E188';
 sheet_name = 'Y23 Timeline - Rev 2';
 
 %the time vector is used as the x-axis when plotting
-tv_length = xlsread(timeline_filename, sheet_name, 'F3');
+tv_length = xlsread(timeline_filename, sheet_name, 'G3');
 %mins to secs
 tv_length = tv_length*60;
 time_vector = 1:tv_length;
